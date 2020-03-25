@@ -15,6 +15,7 @@ export const enum Context {
   OptionsDirectives = 1 << 5,
   OptionsGlobalReturn = 1 << 6,
   OptionsPreserveParens = 1 << 7,
+  OptionsOnToken = 1 << 8,
   Strict = 1 << 10,
   Module = 1 << 11, // Current code should be parsed as a module body
   DisallowIn = 1 << 13,
@@ -120,6 +121,7 @@ export interface ParserState {
   exportedNames: any;
   exportedBindings: any;
   containsEscapes: 0 | 1;
+  onToken: any;
   tokenRegExp: void | {
     pattern: string;
     flags: string;

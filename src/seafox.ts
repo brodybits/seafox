@@ -31,11 +31,14 @@ export interface Options {
   source?: string;
   // Enable non-standard parenthesized expression node
   preserveParens?: boolean;
+  // Enable lexical analysis
+  onToken: boolean;
 }
 
 export function parseRoot(source: string, context: Context, options?: Options): Types.Program {
   if (options !== undefined) {
     if (options.module) context |= Context.Module | Context.Strict;
+    if (options.onToken) context |= Context.OptionsOnToken;
     if (options.next) context |= Context.OptionsNext;
     if (options.loc) context |= Context.OptionsLoc;
     if (options.disableWebCompat) context |= Context.OptionsDisableWebCompat;
