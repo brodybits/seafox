@@ -32,13 +32,13 @@ export interface Options {
   // Enable non-standard parenthesized expression node
   preserveParens?: boolean;
   // Enable lexical analysis
-  onToken?: boolean;
+  onToken?: any;
 }
 
 export function parseRoot(source: string, context: Context, options?: Options): Types.Program {
+  let onToken = void 0;
   if (options !== undefined) {
     if (options.module) context |= Context.Module | Context.Strict;
-    if (options.onToken) context |= Context.OptionsOnToken;
     if (options.next) context |= Context.OptionsNext;
     if (options.loc) context |= Context.OptionsLoc;
     if (options.disableWebCompat) context |= Context.OptionsDisableWebCompat;
@@ -47,10 +47,15 @@ export function parseRoot(source: string, context: Context, options?: Options): 
     if (options.globalReturn) context |= Context.OptionsGlobalReturn;
     if (options.preserveParens) context |= Context.OptionsPreserveParens;
     if (options.impliedStrict) context |= Context.Strict;
+
+    if (options.onToken) {
+      context |= Context.OptionsOnToken;
+      onToken = options.onToken;
+    }
   }
 
   // Initialize parser state
-  const parser = create(source);
+  const parser = create(source, onToken);
 
   // See: https://github.com/tc39/proposal-hashbang
   skipMeta(parser, source);

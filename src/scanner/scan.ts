@@ -622,7 +622,7 @@ export function scan(
   return Token.EOF;
 }
 
-export function nextToken(parser: ParserState, context: Context, allowRegExp: 0 | 1, onToken?: 0 | 1): void {
+export function nextToken(parser: ParserState, context: Context, allowRegExp: 0 | 1, _onToken?: 0 | 1): void {
   parser.newLine = 0;
 
   const { source, length, index, offset } = parser;
@@ -631,11 +631,11 @@ export function nextToken(parser: ParserState, context: Context, allowRegExp: 0 
   parser.lastColumn = (parser.endIndex = index) - offset;
   parser.lastLine = parser.curLine;
   const token = scan(parser, context, source, index, length, Token.EOF, /* lastIsCR */ 0, index === 0, allowRegExp);
-
-  if (onToken === 1 && token !== Token.EOF) {
-    console.log([convertTokenType(parser, token)]);
-  }
   parser.column = parser.start - parser.offset;
   parser.line = parser.curLine;
   parser.token = token;
+
+  if ((context & Context.OptionsOnToken) === Context.OptionsOnToken && token !== Token.EOF) {
+    convertTokenType(parser, token);
+  }
 }

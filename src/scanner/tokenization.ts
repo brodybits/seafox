@@ -1,55 +1,42 @@
 import { Token, KeywordDescTable } from '../token';
 
 export function convertTokenType(parser: any, t: Token): any {
-  if ((t & Token.IsIdentifier) === Token.IsIdentifier)
-    return {
-      type: 'Identifier',
-      value: parser.tokenValue
-    };
-
-  if ((t & Token.Keyword) === Token.Keyword)
-    return {
-      type: 'Keyword',
-      value: parser.tokenValue
-    };
   switch (t) {
     case Token.NumericLiteral:
-      return {
-        type: 'NumericLiteral',
-        value: parser.tokenValue
-      };
+      parser.onToken('NumericLiteral', parser.tokenValue, false);
+      break;
     case Token.StringLiteral:
-      return {
-        type: 'StringLiteral',
-        value: parser.tokenValue
-      };
+      parser.onToken('StringLiteral', parser.tokenValue, false);
+      break;
     case Token.FalseKeyword:
     case Token.TrueKeyword:
-      return {
-        type: 'BooleanLiteral',
-        value: KeywordDescTable[t & Token.Kind] === 'true'
-      };
+      parser.onToken('BooleanLiteral', KeywordDescTable[t & Token.Kind] === 'true', false);
+      break;
     case Token.NullKeyword:
-      return {
-        type: 'NullLiteral',
-        value: null
-      };
+      parser.onToken('NullLiteral', null, false);
+      break;
     case Token.RegularExpression:
-      return {
-        type: 'RegularExpression',
-        value: parser.tokenValue,
-        regex: parser.tokenRegExp
-      };
+      parser.onToken(
+        'RegularExpression',
+        {
+          value: parser.tokenValue,
+          regex: parser.tokenRegExp
+        },
+        false
+      );
+      break;
     case Token.TemplateCont:
     case Token.TemplateTail:
-      return {
-        type: 'TemplateLiteral',
-        value: parser.tokenValue
-      };
+      parser.onToken('TemplateLiteral', parser.tokenValue, false);
+      break;
     default:
-      return {
-        type: 'Punctuator',
-        value: KeywordDescTable[t & Token.Kind]
-      };
+      if ((t & Token.IsIdentifier) === Token.IsIdentifier) {
+        parser.onToken('Identifier', parser.tokenValue, false);
+      }
+
+      if ((t & Token.Keyword) === Token.Keyword) parser.onToken('Keyword', parser.tokenValue, false);
+
+      parser.onToken('Punctuator', KeywordDescTable[t & Token.Kind], false);
+      break;
   }
 }
