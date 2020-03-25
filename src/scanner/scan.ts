@@ -636,6 +636,6 @@ export function nextToken(parser: ParserState, context: Context, allowRegExp: 0 
   parser.token = token;
 
   if ((context & Context.OptionsOnToken) === Context.OptionsOnToken && token !== Token.EOF) {
-    convertTokenType(parser, token);
+    convertTokenType(parser, context, token);
   }
 }

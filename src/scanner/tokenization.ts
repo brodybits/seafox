@@ -1,42 +1,48 @@
 import { Token, KeywordDescTable } from '../token';
+import { ParserState, Context } from '../parser/common';
 
-export function convertTokenType(parser: any, t: Token): any {
+export function convertTokenType(parser: ParserState, context: Context, t: Token): any {
+  let type: string = 'Punctuator';
+  let value = parser.tokenValue;
   switch (t) {
     case Token.NumericLiteral:
-      parser.onToken('NumericLiteral', parser.tokenValue, false);
+      type = 'NumericLiteral';
       break;
     case Token.StringLiteral:
-      parser.onToken('StringLiteral', parser.tokenValue, false);
+      type = 'StringLiteral';
       break;
     case Token.FalseKeyword:
     case Token.TrueKeyword:
-      parser.onToken('BooleanLiteral', KeywordDescTable[t & Token.Kind] === 'true', false);
+      type = 'BooleanLiteral';
+      value = KeywordDescTable[t & Token.Kind] === 'true';
       break;
     case Token.NullKeyword:
-      parser.onToken('NullLiteral', null, false);
+      type = 'NullLiteral';
+      value = null;
       break;
     case Token.RegularExpression:
-      parser.onToken(
-        'RegularExpression',
-        {
-          value: parser.tokenValue,
-          regex: parser.tokenRegExp
-        },
-        false
-      );
+      type = 'RegularExpression';
+      value = {
+        value: parser.tokenValue,
+        regex: parser.tokenRegExp
+      };
       break;
     case Token.TemplateCont:
     case Token.TemplateTail:
-      parser.onToken('TemplateLiteral', parser.tokenValue, false);
+      type = 'TemplateLiteral';
       break;
     default:
       if ((t & Token.IsIdentifier) === Token.IsIdentifier) {
-        parser.onToken('Identifier', parser.tokenValue, false);
+        type = 'Identifier';
+      } else if ((t & Token.Keyword) === Token.Keyword) {
+        type = 'Keyword';
+      } else {
+        type = 'Punctuator';
+        value = KeywordDescTable[t & Token.Kind];
       }
-
-      if ((t & Token.Keyword) === Token.Keyword) parser.onToken('Keyword', parser.tokenValue, false);
-
-      parser.onToken('Punctuator', KeywordDescTable[t & Token.Kind], false);
       break;
   }
+
+  if (context & Context.OptionsLoc) parser.onToken(type, value, false, parser.start, parser.index);
+  else parser.onToken(type, value, false);
 }
