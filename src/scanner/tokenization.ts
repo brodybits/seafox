@@ -20,6 +20,10 @@ export function convertTokenType(parser: ParserState, context: Context, t: Token
       type = 'NullLiteral';
       value = null;
       break;
+    case Token.ThisKeyword:
+      type = 'Keyword';
+      value = 'this';
+      break;
     case Token.RegularExpression:
       type = 'RegularExpression';
       value = {
