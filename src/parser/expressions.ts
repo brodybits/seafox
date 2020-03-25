@@ -2,6 +2,7 @@ import { nextToken } from '../scanner/scan';
 import { scanTemplateTail } from '../scanner/template';
 import { Token, KeywordDescTable } from '../token';
 import { Errors, report, reportScopeError } from '../errors';
+
 import * as Types from './types';
 import { parseStatementListItem } from './statements';
 import {

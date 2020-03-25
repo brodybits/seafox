@@ -52,6 +52,7 @@ import {
   Label,
   isVarDecl
 } from './common';
+import { identifierNotKeyword } from '../scanner/tokenization';
 
 export function parseStatementList(parser: ParserState, context: Context, scope: ScopeState): Types.Statement[] {
   // StatementList ::
@@ -1437,12 +1438,18 @@ export function parseLetIdentOrVarDeclarationStatement(
 ): Types.VariableDeclaration | Types.LabeledStatement | Types.ExpressionStatement {
   const { token, tokenValue, start, line, column } = parser;
 
-  nextToken(parser, context, /* allowRegExp */ 0);
+  const isOnToken = context & Context.OptionsOnToken ? 1 : 0;
+
+  nextToken(parser, (context | Context.OptionsOnToken) ^ Context.OptionsOnToken, /* allowRegExp */ 0);
 
   if ((parser.token & 0b00000010001001110000000000000000) > 0 && parser.containsEscapes === 0) {
     /* VariableDeclarations ::
      *  ('let') (Identifier ('=' AssignmentExpression)?)+[',']
      */
+
+    if (isOnToken === 1) identifierNotKeyword(parser, context, 'let', 'Keyword');
+
+    context |= isOnToken === 1 ? Context.OptionsOnToken : 0;
 
     const declarations = parseVariableDeclarationListAndDeclarator(
       parser,
@@ -1472,6 +1479,10 @@ export function parseLetIdentOrVarDeclarationStatement(
 
   // 'Let' as identifier
   parser.assignable = 1;
+
+  if (isOnToken === 1) identifierNotKeyword(parser, context, 'let', 'Identifier');
+
+  context |= isOnToken === 1 ? Context.OptionsOnToken : 0;
 
   if (context & Context.Strict) report(parser, Errors.StrictInvalidLetInExprPos);
 

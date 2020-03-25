@@ -34,7 +34,7 @@ export function convertTokenType(parser: ParserState, context: Context, t: Token
     default:
       if ((t & Token.IsIdentifier) === Token.IsIdentifier) {
         type = 'Identifier';
-      } else if ((t & Token.Keyword) === Token.Keyword) {
+      } else if ((t & Token.IsIdentifier) === Token.IsIdentifier) {
         type = 'Keyword';
       } else {
         type = 'Punctuator';
@@ -43,6 +43,11 @@ export function convertTokenType(parser: ParserState, context: Context, t: Token
       break;
   }
 
+  if (context & Context.OptionsLoc) parser.onToken(type, value, false, parser.start, parser.index);
+  else parser.onToken(type, value, false);
+}
+
+export function identifierNotKeyword(parser: ParserState, context: Context, value: string, type: string): any {
   if (context & Context.OptionsLoc) parser.onToken(type, value, false, parser.start, parser.index);
   else parser.onToken(type, value, false);
 }

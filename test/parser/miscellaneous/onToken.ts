@@ -18,4 +18,36 @@ describe('Miscellaneous - OnToken', () => {
     });
     t.equal(onTokenCount, 1);
   });
+
+  it('tokenize a keywoeeerd', () => {
+    let onTokenCount = 0;
+    parseScript('let', {
+      onToken: function(token: string, value: any, dirty: boolean, start?: number, end?: number) {
+        t.deepEqual(token, 'Identifier');
+        t.deepEqual(value, 'let');
+        t.deepEqual(dirty, false);
+        t.deepEqual(start, 0);
+        t.deepEqual(end, 3);
+        onTokenCount++;
+      },
+      loc: true
+    });
+    t.equal(onTokenCount, 2);
+  });
+
+  it('tokenize a keyword', () => {
+    let onTokenCount = 0;
+    parseScript('let', {
+      onToken: function(token: string, _value: any, _dirty: boolean, start?: number, end?: number) {
+        t.deepEqual(token, 'Identifier');
+        //t.deepEqual(value, 'a');
+        //    t.deepEqual(dirty, false);
+        t.deepEqual(start, 0);
+        t.deepEqual(end, 3);
+        onTokenCount++;
+      },
+      loc: true
+    });
+    t.equal(onTokenCount, 2);
+  });
 });
