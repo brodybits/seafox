@@ -128,7 +128,7 @@ export interface ParserState {
   };
 }
 
-export function expectSemicolon(parser: ParserState, context: Context): void {
+export function expectSemicolon(parser: ParserState, context: Context, onToken?: 0 | 1): void {
   // Check for automatic semicolon insertion according to
   // the rules given in ECMA-262, section 7.9, page 21.
 
@@ -139,13 +139,24 @@ export function expectSemicolon(parser: ParserState, context: Context): void {
     report(parser, Errors.UnexpectedToken, KeywordDescTable[parser.token & 0b00000000000000000000000011111111]);
   }
 
-  if (parser.token === Token.Semicolon) nextToken(parser, context, /* allowRegExp */ 1);
+  if (parser.token === Token.Semicolon) nextToken(parser, context, /* allowRegExp */ 1, onToken);
 }
 
-export function consumeOpt(parser: ParserState, context: Context, t: Token, allowRegExp: 0 | 1): 0 | 1 {
+export function consumeOpt(
+  parser: ParserState,
+  context: Context,
+  t: Token,
+  allowRegExp: 0 | 1,
+  onToken?: 0 | 1
+): 0 | 1 {
   if (parser.token !== t) return 0;
-  nextToken(parser, context, allowRegExp);
+  nextToken(parser, context, allowRegExp, onToken);
   return 1;
+}
+
+export function consume(parser: ParserState, context: Context, t: Token, allowRegExp: 0 | 1, onToken?: 0 | 1): void {
+  if (parser.token !== t) report(parser, Errors.UnexpectedToken, KeywordDescTable[t & Token.Kind]);
+  nextToken(parser, context, allowRegExp, onToken);
 }
 
 export function setLoc(parser: ParserState, line: number, column: number): any {
@@ -286,11 +297,6 @@ export function isValidStrictMode(parser: ParserState, index: number, start: num
   if (index - start !== 12) return false;
   if (value !== 'use strict') return false;
   return (parser.token & Token.IsAutoSemicolon) === Token.IsAutoSemicolon;
-}
-
-export function consume(parser: ParserState, context: Context, t: Token, allowRegExp: 0 | 1): void {
-  if (parser.token !== t) report(parser, Errors.UnexpectedToken, KeywordDescTable[t & Token.Kind]);
-  nextToken(parser, context, allowRegExp);
 }
 
 export function validateFunctionName(parser: ParserState, context: Context, t: Token): void {

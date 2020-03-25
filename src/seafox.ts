@@ -55,7 +55,7 @@ export function parseRoot(source: string, context: Context, options?: Options): 
   // See: https://github.com/tc39/proposal-hashbang
   skipMeta(parser, source);
 
-  nextToken(parser, context, /* allowRegExp */ 1);
+  nextToken(parser, context, /* allowRegExp */ 1, 1);
 
   const scope = createTopLevelScope();
 

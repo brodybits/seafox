@@ -1,5 +1,6 @@
 import { ParserState, Context } from '../parser/common';
 import { Token } from '../token';
+import { convertTokenType } from './tokenization';
 import {
   Chars,
   skipSingleLineComment,
@@ -632,7 +633,7 @@ export function nextToken(parser: ParserState, context: Context, allowRegExp: 0 
   const token = scan(parser, context, source, index, length, Token.EOF, /* lastIsCR */ 0, index === 0, allowRegExp);
 
   if (onToken === 1 && token !== Token.EOF) {
-    // TODO! Lexical analyzes
+    console.log([convertTokenType(parser, token)]);
   }
   parser.column = parser.start - parser.offset;
   parser.line = parser.curLine;
