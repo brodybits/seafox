@@ -32,7 +32,7 @@ export interface Options {
   // Enable non-standard parenthesized expression node
   preserveParens?: boolean;
   // Enable lexical analysis
-  onToken: boolean;
+  onToken?: boolean;
 }
 
 export function parseRoot(source: string, context: Context, options?: Options): Types.Program {
